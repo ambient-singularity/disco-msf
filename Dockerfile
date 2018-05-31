@@ -9,10 +9,12 @@ RUN apt-get update && apt-get -y install \
   libncurses-dev libpcap-dev libpq-dev libreadline6-dev libssl-dev libsqlite3-dev \
   libsvn1 libtool libxml2 libxml2-dev libxslt-dev libyaml-dev locate \
   nano nasm ncurses-dev nethogs nmap openssl proxychains postgresql postgresql-client \
-  postgresql-contrib python-crypto python-openssl python-pefile python-pexpect python-pymssql \
+  postgresql-contrib python-crypto python-openssl python-pefile python-pexpect python-pip python-pymssql \
   python-requests tar vim wget whois xsel zlib1g zlib1g-dev \
   && rm -rf /var/lib/apt/lists/*
 
+# Python dependencies
+RUN pip install tabulate termcolor python-libnmap msgpack-python beautifulsoup4 requests
 
 # startup script and tmux configuration file
 #COPY ./scripts/init.sh /usr/local/bin/init.sh && \
@@ -64,6 +66,21 @@ RUN /bin/bash -l -c "BUNDLEJOBS=$(expr $(cat /proc/cpuinfo | grep vendor_id | wc
 RUN /bin/bash -l -c "bundle config --global jobs $BUNDLEJOBS"
 RUN /bin/bash -l -c "bundle install"
 
+# Install metasploithelper
+RUN git clone https://github.com/SpiderLabs/msfrpc
+WORKDIR /opt/msfrpc/python-msfrpc
+RUN python setup.py install
+WORKDIR /root/.msf4/scripts/resource
+RUN git clone https://github.com/milo2012/metasploitHelper
+
+# Pull msf battery scripts
+WORKDIR /root/.msf4/scripts/resource
+RUN git clone https://github.com/kn0/battery
+RUN cp -r battery/* . && rm -r battery/battery/
+
+# Pull runall.rc ruby script
+RUN curl -sSl https://github.com/ambient-singularity/disco-msf/raw/master/scripts/runall.rc --output /root/.msf4/scripts/resource/runall.rc
+
 # Symlink tools to $PATH
 RUN for i in `ls /opt/msf/tools/*/*`; do ln -s $i /usr/local/bin/; done
 RUN ln -s /opt/msf/msf* /usr/local/bin
@@ -73,4 +90,4 @@ VOLUME /root/.msf4/
 VOLUME /tmp/data/
 
 # Starting script (DB + updates)
-#CMD /usr/local/bin/init.sh
+CMD /usr/local/bin/init.sh
