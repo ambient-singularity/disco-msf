@@ -5,24 +5,25 @@ USER root
 
 # Base packages
 RUN apt-get update && apt-get -y install \
-  apache2 autoconf bison build-essential curl git git-core libapache2-mod-php5 \
+  apache2 autoconf bison build-essential curl git git-core iftop libapache2-mod-php5 \
   libapr1 libaprutil1 libcurl4-openssl-dev libevent-dev libgmp3-dev \
   libncurses-dev libpcap-dev libpq-dev libreadline6-dev libssl-dev libsqlite3-dev \
   libsvn1 libtool libxml2 libxml2-dev libxslt-dev libyaml-dev locate \
-  ncurses-dev nano nasm nmap openssl postgresql postgresql-client \
+  nano nasm ncurses-dev nethogs nmap openssl proxychains postgresql postgresql-client \
   postgresql-contrib python-crypto python-openssl python-pefile python-pexpect python-pymssql \
-  python-requests tar vim wget xsel zlib1g zlib1g-dev \
+  python-requests tar vim wget whois xsel zlib1g zlib1g-dev \
   && rm -rf /var/lib/apt/lists/*
 
 
 # startup script and tmux configuration file
-RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/scripts/init.sh --output /usr/local/bin/init.sh && init.sh /usr/local/bin/init.sh && \
-  chmod a+xr /usr/local/bin/init.sh 
+#COPY ./scripts/init.sh /usr/local/bin/init.sh && \
+RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/scripts/init.sg --output /usr/local/bin/init.sh && \
+  chmod a+xr /usr/local/bin/init.sh
 
 ## Updated tmux install & config
-RUN VERSION=2.6 && wget -qO- https://github.com/tmux/tmux/releases/download/${VERSION}/tmux-${VERSION}.tar.gz | tar xvz -C tmux-2.6
+RUN wget -qO- https://github.com/tmux/tmux/releases/download/2.6/tmux-2.6.tar.gz | tar xvz
 WORKDIR tmux-2.6
-RUN configure && make -j"$(nproc)" && sudo make install
+RUN ./configure && make -j"$(nproc)" && sudo make install
 
 ## Cleanup tmux install
 WORKDIR /opt
@@ -39,15 +40,14 @@ RUN python setup.py install
 WORKDIR /opt
 RUN rm -r set/
 
-
 # Get Metasploit
 RUN git clone https://github.com/rapid7/metasploit-framework.git msf
 WORKDIR msf
 
 # Install PosgreSQL
-RUN curl -sSl https://github.com/ambient-singularity/disco-msf/raw/master/scripts/db.sql --output /tmp/db.sql
+RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/scripts/db.sql --output /tmp/db.sql
 RUN /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql"
-RUN curl -sSl https:///config/database.yml --output /opt/msf/config/database.yml
+RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/config/database.yml --output /opt/msf/config/database.yml
 
 # RVM
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import
@@ -73,11 +73,5 @@ RUN ln -s /opt/msf/msf* /usr/local/bin
 VOLUME /root/.msf4/
 VOLUME /tmp/data/
 
-# Disable & stop Apache2
-RUN systemctl disable apache2
-RUN systemctl stop apache2
-
 # Starting script (DB + updates)
 CMD /usr/local/bin/init.sh
-
-
