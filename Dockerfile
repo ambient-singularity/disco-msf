@@ -1,4 +1,3 @@
-
 FROM ubuntu:14.04
 WORKDIR /opt
 USER root
@@ -17,7 +16,7 @@ RUN apt-get update && apt-get -y install \
 
 # startup script and tmux configuration file
 #COPY ./scripts/init.sh /usr/local/bin/init.sh && \
-RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/scripts/init.sg --output /usr/local/bin/init.sh && \
+RUN curl -sSL https://github.com/ambient-singularity/disco-msf/raw/master/scripts/init.sh --output /usr/local/bin/init.sh && \
   chmod a+xr /usr/local/bin/init.sh
 
 ## Updated tmux install & config
@@ -74,4 +73,4 @@ VOLUME /root/.msf4/
 VOLUME /tmp/data/
 
 # Starting script (DB + updates)
-CMD /usr/local/bin/init.sh
+#CMD /usr/local/bin/init.sh
