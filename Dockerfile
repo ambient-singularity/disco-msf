@@ -4,7 +4,7 @@ USER root
 
 # Base packages
 RUN apt-get update && apt-get -y install \
-  apache2 autoconf bison build-essential curl git git-core iftop libapache2-mod-php5 \
+  apache2 autoconf bash-completion bison build-essential curl git git-core iftop libapache2-mod-php5 \
   libapr1 libaprutil1 libcurl4-openssl-dev libevent-dev libgmp3-dev \
   libncurses-dev libpcap-dev libpq-dev libreadline6-dev libssl-dev libsqlite3-dev \
   libsvn1 libtool libxml2 libxml2-dev libxslt-dev libyaml-dev locate \
@@ -89,6 +89,9 @@ RUN ln -s /opt/msf/msf* /usr/local/bin
 # settings and custom scripts folder
 VOLUME /root/.msf4/
 VOLUME /tmp/data/
+
+# Custom .bashrc
+RUN curl -sSl https://github.com/ambient-singularity/disco-msf/raw/master/conf/.bashrc --output /root/.bashrc
 
 # Starting script (DB + updates)
 CMD /usr/local/bin/init.sh
