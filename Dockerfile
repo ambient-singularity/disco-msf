@@ -91,7 +91,7 @@ VOLUME /root/.msf4/
 VOLUME /tmp/data/
 
 # Custom .bashrc
-RUN curl -sSl https://github.com/ambient-singularity/disco-msf/raw/master/conf/.bashrc --output /root/.bashrc
+RUN wget https://raw.githubusercontent.com/ambient-singularity/disco-msf/master/conf/.bashrc --output-file=/root/.bashrc
 
 # Starting script (DB + updates)
 CMD /usr/local/bin/init.sh
