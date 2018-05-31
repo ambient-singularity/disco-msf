@@ -67,8 +67,9 @@ RUN /bin/bash -l -c "bundle config --global jobs $BUNDLEJOBS"
 RUN /bin/bash -l -c "bundle install"
 
 # Install metasploithelper
+WORKDIR /tmp/data
 RUN git clone https://github.com/SpiderLabs/msfrpc
-WORKDIR /opt/msfrpc/python-msfrpc
+WORKDIR /tmp/data/msfrpc/python-msfrpc
 RUN python setup.py install
 WORKDIR /root/.msf4/scripts/resource
 RUN git clone https://github.com/milo2012/metasploitHelper
