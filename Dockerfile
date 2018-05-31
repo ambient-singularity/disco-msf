@@ -4,13 +4,13 @@ USER root
 
 # Base packages
 RUN apt-get update && apt-get -y install \
-  apache2 autoconf bash-completion bison build-essential curl git git-core iftop libapache2-mod-php5 \
-  libapr1 libaprutil1 libcurl4-openssl-dev libevent-dev libgmp3-dev \
+  apache2 autoconf bash-completion bison build-essential curl gawk git git-core iftop libapache2-mod-php5 \
+  libapr1 libaprutil1 libcurl4-openssl-dev libevent-dev libffi-dev libgdbm-dev libgmp3-dev \
   libncurses-dev libpcap-dev libpq-dev libreadline6-dev libssl-dev libsqlite3-dev \
   libsvn1 libtool libxml2 libxml2-dev libxslt-dev libyaml-dev locate \
   nano nasm ncurses-dev nethogs nmap openssl proxychains postgresql postgresql-client \
   postgresql-contrib python-crypto python-openssl python-pefile python-pexpect python-pip python-pymssql \
-  python-requests tar vim wget whois xsel zlib1g zlib1g-dev \
+  python-requests sqlite3 tar vim wget whois xsel zlib1g zlib1g-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
