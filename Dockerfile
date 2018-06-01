@@ -87,16 +87,16 @@ RUN for i in `ls /opt/msf/tools/*/*`; do ln -s $i /usr/local/bin/; done
 RUN ln -s /opt/msf/msf* /usr/local/bin
 
 # Install Armitage
-WORKDIR /opt
+WORKDIR /opt 
 RUN curl -# -o /tmp/armitage.tgz \
-  http://www.fastandeasyhacking.com/download/armitage-latest.tgz
-RUN tar -xvzf /tmp/armitage.tgz -C /opt
-RUN ln -s /opt/armitage/armitage /usr/local/bin/armitage
-RUN ln -s /opt/armitage/teamserver /usr/local/bin/teamserver
-RUN sh -c "echo java -jar /opt/armitage/armitage.jar \$\* > \
+  http://www.fastandeasyhacking.com/download/armitage150813.tgz 
+RUN tar -xvzf /tmp/armitage.tgz -C /opt 
+RUN ln -s /opt/armitage/armitage /usr/local/bin/armitage 
+RUN ln -s /opt/armitage/teamserver /usr/local/bin/teamserver 
+RUN sh -c  "echo java -jar /opt/armitage/armitage.jar \$\* > \
   /opt/armitage/armitage"
 RUN perl -pi -e 's/armitage.jar/\/opt\/armitage\/armitage.jar/g' \
-  /opt/armitage/teamserver
+   /opt/armitage/teamserver
 
 # Link Metasploit & Armitage environments
 RUN sh -c "echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/config/database.yml; /etc/profile" source /etc/profile
