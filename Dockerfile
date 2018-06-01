@@ -6,11 +6,11 @@ USER root
 RUN apt-get update && apt-get -y install \
   apache2 autoconf bash-completion bison build-essential curl gawk git git-core iftop libapache2-mod-php5 \
   libapr1 libaprutil1 libcurl4-openssl-dev libevent-dev libffi-dev libgdbm-dev libgmp3-dev \
-  libncurses-dev libpcap-dev libpq-dev libreadline6-dev libssl-dev libsqlite3-dev \
+  libncurses-dev libpcap-dev libpq5 libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsqlite3-dev \
   libsvn1 libtool libxml2 libxml2-dev libxslt-dev libyaml-dev locate \
-  nano nasm ncurses-dev nethogs nmap openssl proxychains postgresql postgresql-client \
+  nano nasm ncurses-dev nethogs nmap openjdk-7-jre openssl pgadmin3 proxychains postgresql postgresql-client \
   postgresql-contrib python-crypto python-openssl python-pefile python-pexpect python-pip python-pymssql \
-  python-requests sqlite3 tar vim wget whois xsel zlib1g zlib1g-dev \
+  python-requests sqlite3 tar vim wget whois xauth xsel zlib1g zlib1g-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
@@ -86,12 +86,24 @@ RUN curl -sSl https://github.com/ambient-singularity/disco-msf/raw/master/script
 RUN for i in `ls /opt/msf/tools/*/*`; do ln -s $i /usr/local/bin/; done
 RUN ln -s /opt/msf/msf* /usr/local/bin
 
+# Install Armitage
+WORKDIR /opt
+RUN curl -# -o /tmp/armitage.tgz \
+  http://www.fastandeasyhacking.com/download/armitage-latest.tgz
+RUN tar -xvzf /tmp/armitage.tgz -C /opt
+RUN ln -s /opt/armitage/armitage /usr/local/bin/armitage
+RUN ln -s /opt/armitage/teamserver /usr/local/bin/teamserver
+RUN sh -c "echo java -jar /opt/armitage/armitage.jar \$\* > \
+  /opt/armitage/armitage"
+RUN perl -pi -e 's/armitage.jar/\/opt\/armitage\/armitage.jar/g' \
+  /opt/armitage/teamserver
+
+# Link Metasploit & Armitage environments
+RUN sh -c "echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/config/database.yml; /etc/profile" source /etc/profile
+
 # settings and custom scripts folder
 VOLUME /root/.msf4/
 VOLUME /tmp/data/
-
-# Custom .bashrc
-RUN wget https://raw.githubusercontent.com/ambient-singularity/disco-msf/master/conf/.bashrc --output-file=/root/.bashrc
 
 # Starting script (DB + updates)
 CMD /usr/local/bin/init.sh
